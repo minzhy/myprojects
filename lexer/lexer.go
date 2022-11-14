@@ -1,5 +1,6 @@
 package lexer
 
+//
 import (
 	"token/token"
 )
