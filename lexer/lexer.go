@@ -1,7 +1,7 @@
 package lexer
 
 import (
-	"token/token"
+	"myprojects/token"
 )
 
 // test remote
