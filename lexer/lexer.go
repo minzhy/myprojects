@@ -4,6 +4,7 @@ import (
 	"token/token"
 )
 
+// test remote
 type Lexer struct {
 	input        string
 	position     int
