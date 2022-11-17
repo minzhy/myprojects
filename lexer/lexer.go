@@ -7,9 +7,9 @@ import (
 // test remote
 type Lexer struct {
 	input        string
-	position     int
-	readPosition int
-	ch           byte
+	position     int  // 当前读的位置
+	readPosition int  // 下一个读的位置
+	ch           byte // 现在这个位置上的char
 }
 
 func New(input string) *Lexer {
