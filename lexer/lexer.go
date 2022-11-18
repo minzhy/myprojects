@@ -95,15 +95,12 @@ func (l *Lexer) NextToken() token.Token {
 	return tok
 }
 
+// 新建Token
 func newToken(tokenType token.TokenType, ch byte) token.Token {
 	return token.Token{Type: tokenType, Literal: string(ch)}
 }
 
-// 是否是标识符的一部分（是否可以是变量名或者是关键字的一部分
-func isLetter(ch byte) bool {
-	return 'a' <= ch && ch <= 'z' || 'A' <= ch && 'Z' >= ch || ch == '_'
-}
-
+// 读取一个string 是IDENT或者是关键词
 func (l *Lexer) readIdentifier() string {
 	position := l.position
 	for isLetter(l.ch) {
@@ -112,6 +109,7 @@ func (l *Lexer) readIdentifier() string {
 	return l.input[position:l.position] // 这个意思是读一个string片段
 }
 
+// 跳过空行
 func (l *Lexer) skipWhitespace() {
 	for l.ch == ' ' || l.ch == '\t' || l.ch == '\n' || l.ch == '\r' {
 		l.readChar()
@@ -133,6 +131,12 @@ func isDigit(ch byte) bool {
 	return false
 }
 
+// 是否是标识符的一部分（是否可以是变量名或者是关键字的一部分
+func isLetter(ch byte) bool {
+	return 'a' <= ch && ch <= 'z' || 'A' <= ch && 'Z' >= ch || ch == '_'
+}
+
+// 查看下一个char
 func (l *Lexer) peekChar() byte {
 	if l.readPosition >= len(l.input) {
 		return 0

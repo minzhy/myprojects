@@ -2,7 +2,7 @@ package ast
 
 import "myprojects/token"
 
-// 每个ast树的节点都要继承
+// 每个ast树的节点都要继承，因为每个节点至少一个Token，所以一定有TokenLiteral
 type Node interface {
 	TokenLiteral() string
 }
@@ -13,13 +13,21 @@ type Statement interface {
 }
 
 type LetStatement struct {
-	Token token.Token // token.LET 词法单元
+	Token token.Token // token.LET 词法单元，所以这个Token一定是Let
 	Name  *Identifier
 	Value Expression
 }
 
 func (ls *LetStatement) statementNode()       {}
 func (ls *LetStatement) TokenLiteral() string { return ls.Token.Literal }
+
+type ReturnStatement struct {
+	Token       token.Token
+	ReturnValue Expression
+}
+
+func (rs *ReturnStatement) statementNode()       {}
+func (rs *ReturnStatement) TokenLiteral() string { return rs.Token.Literal }
 
 type Expression interface {
 	Node
@@ -35,6 +43,7 @@ type Identifier struct {
 func (i *Identifier) expressionNode()      {}
 func (i *Identifier) TokenLiteral() string { return i.Token.Literal }
 
+// 整个程序是有一堆的statement组成的！！program相当于是一个根节点啊
 type Program struct {
 	Statements []Statement
 }
