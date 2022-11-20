@@ -16,6 +16,11 @@ type Statement interface {
 	statementNode()
 }
 
+type Expression interface {
+	Node
+	expressionNode()
+}
+
 type LetStatement struct {
 	Token token.Token // token.LET 词法单元，所以这个Token一定是Let
 	Name  *Identifier
@@ -76,11 +81,6 @@ func (es *ExpressionStatement) String() string {
 	return ""
 }
 
-type Expression interface {
-	Node
-	expressionNode()
-}
-
 // Identifier 其实算作表达式的其中一种！毕竟也可以当成是表达式。expression并不一定是Identify
 type Identifier struct {
 	Token token.Token // token.IDENT 词法单元
@@ -121,3 +121,22 @@ type IntegerLiteral struct {
 func (il *IntegerLiteral) expressionNode()      {}
 func (il *IntegerLiteral) TokenLiteral() string { return il.Token.Literal }
 func (il *IntegerLiteral) String() string       { return il.Token.Literal }
+
+type PrefixExpression struct {
+	Token    token.Token //前缀词法单元，如！
+	Operator string
+	Right    Expression
+}
+
+func (pe *PrefixExpression) expressionNode()      {}
+func (pe *PrefixExpression) TokenLiteral() string { return pe.Token.Literal }
+func (pe *PrefixExpression) String() string {
+	var out bytes.Buffer
+
+	out.WriteString("(")
+	out.WriteString(pe.Operator)
+	out.WriteString(pe.Right.String())
+	out.WriteString(")")
+
+	return out.String()
+}
