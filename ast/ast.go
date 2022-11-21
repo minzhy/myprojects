@@ -5,6 +5,28 @@ import (
 	"myprojects/token"
 )
 
+// 整个程序是有一堆的statement组成的！！program相当于是一个根节点啊
+type Program struct {
+	Statements []Statement
+}
+
+func (p *Program) TokenLiteral() string {
+	if len(p.Statements) > 0 {
+		return p.Statements[0].TokenLiteral()
+	} else {
+		return ""
+	}
+}
+
+func (p *Program) String() string {
+	var out bytes.Buffer
+
+	for _, s := range p.Statements {
+		out.WriteString(s.String())
+	}
+	return out.String()
+}
+
 // 每个ast树的节点都要继承，因为每个节点至少一个Token，所以一定有TokenLiteral
 type Node interface {
 	TokenLiteral() string
@@ -21,6 +43,7 @@ type Expression interface {
 	expressionNode()
 }
 
+// Statement interface
 type LetStatement struct {
 	Token token.Token // token.LET 词法单元，所以这个Token一定是Let
 	Name  *Identifier
@@ -45,6 +68,7 @@ func (ls *LetStatement) String() string {
 	return out.String()
 }
 
+// Statement interface
 type ReturnStatement struct {
 	Token       token.Token
 	ReturnValue Expression
@@ -66,7 +90,7 @@ func (rs *ReturnStatement) String() string {
 	return out.String()
 }
 
-// expression 也当成一个statement
+// Statement interface
 type ExpressionStatement struct {
 	Token      token.Token
 	Expression Expression
@@ -82,6 +106,7 @@ func (es *ExpressionStatement) String() string {
 }
 
 // Identifier 其实算作表达式的其中一种！毕竟也可以当成是表达式。expression并不一定是Identify
+// Expression statement
 type Identifier struct {
 	Token token.Token // token.IDENT 词法单元
 	Value string
@@ -91,28 +116,7 @@ func (i *Identifier) expressionNode()      {}
 func (i *Identifier) TokenLiteral() string { return i.Token.Literal }
 func (i *Identifier) String() string       { return i.Value }
 
-// 整个程序是有一堆的statement组成的！！program相当于是一个根节点啊
-type Program struct {
-	Statements []Statement
-}
-
-func (p *Program) TokenLiteral() string {
-	if len(p.Statements) > 0 {
-		return p.Statements[0].TokenLiteral()
-	} else {
-		return ""
-	}
-}
-
-func (p *Program) String() string {
-	var out bytes.Buffer
-
-	for _, s := range p.Statements {
-		out.WriteString(s.String())
-	}
-	return out.String()
-}
-
+// Expression statement
 type IntegerLiteral struct {
 	Token token.Token
 	Value int64
@@ -122,8 +126,9 @@ func (il *IntegerLiteral) expressionNode()      {}
 func (il *IntegerLiteral) TokenLiteral() string { return il.Token.Literal }
 func (il *IntegerLiteral) String() string       { return il.Token.Literal }
 
+// Expression statement
 type PrefixExpression struct {
-	Token    token.Token //前缀词法单元，如！
+	Token    token.Token //前缀词法单元，如-
 	Operator string
 	Right    Expression
 }
@@ -136,6 +141,28 @@ func (pe *PrefixExpression) String() string {
 	out.WriteString("(")
 	out.WriteString(pe.Operator)
 	out.WriteString(pe.Right.String())
+	out.WriteString(")")
+
+	return out.String()
+}
+
+// Expression statement
+type InfixExpression struct {
+	Token    token.Token // 运算符词法单元，如：+
+	Left     Expression
+	Operator string
+	Right    Expression
+}
+
+func (ie *InfixExpression) expressionNode()      {}
+func (ie *InfixExpression) TokenLiteral() string { return ie.Token.Literal }
+func (ie *InfixExpression) String() string {
+	var out bytes.Buffer
+
+	out.WriteString("(")
+	out.WriteString(ie.Left.String())
+	out.WriteString(" " + ie.Operator + " ")
+	out.WriteString(ie.Right.String())
 	out.WriteString(")")
 
 	return out.String()
