@@ -8,6 +8,8 @@ const (
 	INTERGER_OBJ = "INTEGER"
 	BOOLEAN_OBJ  = "BOOLEAN"
 	NULL_OBJ     = "NULL"
+
+	INTEGER_OBJ = "INTEGER"
 )
 
 type Object interface {
